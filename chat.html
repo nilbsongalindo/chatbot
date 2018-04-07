@@ -15,11 +15,17 @@
          
         <div id="chatbox"></div>
          
-        <input name="usermsg" type="text" id="usermsg" size="63" />
+        <input name="usermsg" type="text" id="usermsg" size="63" onkeypress="checkKey(event)" />
         <input name="submitmsg" type="submit"  id="submitmsg" value="Send" onclick="sendText()" />
     </div>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
     <script type="text/javascript">
+        function checkKey(e){
+            if (e.keyCode == 13) {
+                sendText();
+                return false;
+            }
+        }
         function sendText(){
             var data = {
                 text: document.getElementById('usermsg').value,
@@ -27,6 +33,8 @@
 
             var chatbox = document.getElementById('chatbox');
             chatbox.innerHTML += 'Você: ' + data.text + '<br>';
+
+            document.getElementById('usermsg').value = '';
 
             ajax('processa.php', 'POST', data, error, success);
         }
