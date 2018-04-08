@@ -1,5 +1,12 @@
-import os, time
-import json
+import os, time, json
+import gensim
+
+SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+MODEL_PATH  = os.path.join(SCRIPT_PATH, 'model/')
+# Load word2vec model
+print('Loading Model')
+model = gensim.models.Word2Vec.load(os.path.join(MODEL_PATH, 'word2vecWiki.model'), mmap='r')
+print('Model loaded')
 
 def is_locked(filepath):
 	"""Checks if a file is locked by opening it in append mode.
@@ -52,9 +59,15 @@ def process(filepath):
 
 	if len(content) > 0:
 		data = json.loads(content[0])
+		words = data['user_msg'].split(" ")
+		output = ''
+		if len(words) > 1:
+			output = 'Similaridade entre ' + words[0] + " e " + words[1] + " = " + str(model.similarity(words[0], words[1]))
+		else:
+			output = 'O vetor de ' + words[0] + " = " + str(model.wv[words[0]])
 
 		with open('./tmp/' + data['tmp_file'], 'w') as out_file:
-			out_file.write('Ola, voce enviou:'+data['user_msg'])
+			out_file.write(output)
 
 if __name__ == '__main__':
 	file = [r"./tmp/log.txt"]
